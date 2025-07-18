@@ -13,48 +13,44 @@ jobs:
       - name: notify
         run: echo "git clone done"
 
-  build_and_push_frontend:
+  login_in_docker:
     runs-on: ubuntu-latest
     needs: [checkout_code]
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+  build_frontend_image_push_in_dockerhub:
+    runs-on: ubuntu-latest
+    needs: [login_in_docker]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
       - name: Build and Push Frontend Image
         uses: docker/build-push-action@v5
         with:
           context: ./Client
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/crud-frontend:latest
-
       - name: notify
         run: echo "Frontend image pushed to Docker Hub"
 
-  build_and_push_backend:
+  build_backend_image_push_in_dockerhub:
     runs-on: ubuntu-latest
-    needs: [checkout_code]
+    needs: [build_frontend_image_push_in_dockerhub]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
       - name: Build and Push Backend Image
         uses: docker/build-push-action@v5
         with:
           context: ./API
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/crud-backend:latest
-
       - name: notify
         run: echo "Backend image pushed to Docker Hub"
+
+        
