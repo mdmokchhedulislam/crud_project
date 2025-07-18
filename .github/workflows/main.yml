@@ -36,3 +36,5 @@ jobs:
           context: ./API
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/crud-backend:latest
+      - name: notify
+        run: echo frontend and backend image puss in github
