@@ -30,7 +30,7 @@ jobs:
      - name: create frontend image 
        uses: docker/build-push-action@v5
        with:
-         context: ./frontend
+         context: ./Client
          push: true
          tags: ${{ secrets.DOCKER_USERNAME }}/crud-frontend:latest
      - name: notify
