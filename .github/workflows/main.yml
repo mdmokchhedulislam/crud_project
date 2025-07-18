@@ -43,7 +43,7 @@ jobs:
 
   build_backend_image_push_in_dockerhub:
     runs-on: ubuntu-latest
-    # needs: [build_frontend_image_push_in_dockerhub]
+    needs: [build_frontend_image_push_in_dockerhub]
     steps:
      - name: checkout code
        uses: actions/checkout@v3
