@@ -5,12 +5,12 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
-RUN npm run build   # build কমান্ড চালাও
+RUN npm run build   
 
 FROM node:18-alpine
 RUN npm install -g serve
 WORKDIR /app
-COPY --from=builder /app/build ./build  # এটা build ফোল্ডার কপি করবে
+COPY --from=builder /app/dist ./build  
 
 EXPOSE 80
 CMD ["serve", "-s", "build", "-l", "80"]
