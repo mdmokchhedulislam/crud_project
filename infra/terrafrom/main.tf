@@ -23,11 +23,11 @@ provider "aws" {
 
 module "vpc" {
   source = "./modules/vpc"
-  
+
 }
 
 module "eks" {
   source                 = "./modules/eks"
-  vpc_subnet_ids         = [ module.vpc.public_subnet_id_1, module.vpc.public_subnet_id_2,module.vpc.private_subnet_id_1, module.vpc.private_subnet_id_2]
+  vpc_subnet_ids         = [module.vpc.public_subnet_id_1, module.vpc.public_subnet_id_2, module.vpc.private_subnet_id_1, module.vpc.private_subnet_id_2]
   worker_node_subnet_ids = [module.vpc.private_subnet_id_1, module.vpc.private_subnet_id_2]
 }

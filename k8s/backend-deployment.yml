@@ -1,34 +1,15 @@
-# Secret for backend environment
-
-apiVersion: v1
-kind: Secret
-metadata:
-  name: backend-secrets
-type: Opaque
-stringData:
-  DATABASE_URL: mongodb://mongo-service:27017/mydb
-  # BCRYPT_SALT_ROUNDS: "10"
-  # JWT_ACCESS_SECRET: mokchhedul
-  # JWT_REFRESH_SECRET: mokchhedul
-  # JWT_ACCESS_EXPIRES_IN: 1d
-  # JWT_REFRESH_EXPIRES_IN: 7d
-  # STORE_ID:
-  # STORE_PASS: 
----
-
-# ConfigMap for backend environment
-
+# ConfigMap for environment variables
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: backend-config
 data:
-  NODE_ENV: "production"
-  PORT: "8080"
+  MONGO_URI: mongodb://mongo:27017/data
+  PORT: "3000"
+
 ---
-# -----------------------------------
+
 # Backend Deployment
-# -----------------------------------
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,77 +23,27 @@ spec:
     metadata:
       labels:
         app: backend
-
-        
     spec:
       containers:
-      - name: backend
-        image: mokchhedul/crud-backend:latest
-        ports:
-        - containerPort: 8080
-        env:
-        # - name: NODE_ENV
-        #   valueFrom:
-        #     configMapKeyRef:
-        #       name: backend-config
-        #       key: NODE_ENV
+        - name: backend
+          image: mokchhedul/crud-backend:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: MONGO_URI
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: PORT
 
-        - name: PORT
-          valueFrom:
-            configMapKeyRef:
-              name: backend-config
-              key: PORT
-
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: backend-secrets
-              key: DATABASE_URL
-        # - name: BCRYPT_SALT_ROUNDS
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: backend-secrets
-        #       key: BCRYPT_SALT_ROUNDS
-
-        # - name: JWT_ACCESS_SECRET
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: backend-secrets
-        #       key: JWT_ACCESS_SECRET
-
-        # - name: JWT_REFRESH_SECRET
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: backend-secrets
-        #       key: JWT_REFRESH_SECRET
-
-        # - name: JWT_ACCESS_EXPIRES_IN
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: backend-secrets
-        #       key: JWT_ACCESS_EXPIRES_IN
-
-        # - name: JWT_REFRESH_EXPIRES_IN
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: backend-secrets
-        #       key: JWT_REFRESH_EXPIRES_IN
-
-        # - name: STORE_ID
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: backend-secrets
-        #       key: STORE_ID
-
-        # - name: STORE_PASS
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: backend-secrets
-        #       key: STORE_PASS
 ---
-# -----------------------------------
+
 # Backend Service
-# -----------------------------------
 apiVersion: v1
 kind: Service
 metadata:
@@ -121,6 +52,8 @@ spec:
   selector:
     app: backend
   ports:
-  - port: 80
-    targetPort: 8080
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
   type: ClusterIP
+
