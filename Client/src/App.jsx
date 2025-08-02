@@ -12,7 +12,7 @@ const App = () => {
   const [relaod, setRelaod] = useState(false)
   const [id, setId] = useState("")
 
-  const url = "http://a582244455e19417ea5d4c6dc6abfde3-982799727.us-east-1.elb.amazonaws.com:3000";
+  const url = "http://backend-service:3000";
 
 
   useEffect(() => {
